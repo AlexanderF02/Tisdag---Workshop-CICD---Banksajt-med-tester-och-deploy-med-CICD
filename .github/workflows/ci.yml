@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd bank/frontend
-          npm install --legacy-peer-deps 
+          npm install --legacy-peer-deps
 
       - name: Run tests
         run: |
@@ -34,7 +34,11 @@ jobs:
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.AWS_KEY }}  
+          ssh-private-key: ${{ secrets.AWS_KEY }}
+
+      - name: Add EC2 host to known hosts
+        run: |
+          ssh-keyscan -H ec2-51-20-85-218.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Deploy to AWS
         run: |
