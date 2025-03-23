@@ -38,9 +38,9 @@ jobs:
 
       - name: Deploy to AWS
         run: |
-          scp -r bank/frontend/* user@your-instance-ip:/path/to/deploy
-          ssh user@your-instance-ip << 'EOF'
-            cd /path/to/deploy
+          scp -i /home/alexander/alexkey.pem -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
+          ssh -i /home/alexander/alexkey.pem ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
+            cd /home/ubuntu/bank
             npm install
             npm run build
             pm2 restart all # or any other command to restart your application
