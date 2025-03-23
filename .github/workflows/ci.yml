@@ -36,17 +36,21 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.AWS_KEY }}
 
+      - name: Check SSH key is added
+        run: |
+          ssh-add -l  # This lists the keys added to the SSH agent to verify the key is correctly loaded
+
       - name: Add EC2 host to known hosts
         run: |
           ssh-keyscan -H ec2-51-20-85-218.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Deploy to AWS
         run: |
-          # Use SCP to copy files to EC2
-          scp -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
+          # Use SCP to copy files to EC2, disabling host key checking
+          scp -o StrictHostKeyChecking=no -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
 
-          # Connect via SSH and run commands on EC2
-          ssh ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
+          # Connect via SSH and run commands on EC2, disabling host key checking
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
             cd /home/ubuntu/bank
             npm install
             npm run build
