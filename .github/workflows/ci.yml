@@ -32,6 +32,7 @@ jobs:
           npm test
 
       - name: Add SSH key
+        id: add_ssh_key
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.AWS_KEY }}
@@ -43,6 +44,10 @@ jobs:
       - name: Add EC2 host to known hosts
         run: |
           ssh-keyscan -H ec2-51-20-85-218.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+
+      - name: Debug SSH connection
+        run: |
+          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com echo "SSH connection successful"
 
       - name: Deploy to AWS
         run: |
