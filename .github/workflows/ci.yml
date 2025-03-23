@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd bank/frontend
-          npm install --legacy-peer-deps
+          npm install --legacy-peer-deps 
 
       - name: Run tests
         run: |
