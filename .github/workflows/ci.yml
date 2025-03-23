@@ -48,15 +48,15 @@ jobs:
 
       - name: Debug SSH connection
         run: |
-          ssh -i ~/.ssh/id_rsa -v -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com echo "SSH connection successful"
+          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com echo "SSH connection successful"
 
       - name: Deploy to AWS
         run: |
           # Use SCP to copy files to EC2, disabling host key checking
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
+          scp -o StrictHostKeyChecking=no -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
 
           # Connect via SSH and run commands on EC2, disabling host key checking
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
             cd /home/ubuntu/bank
             npm install
             npm run build
