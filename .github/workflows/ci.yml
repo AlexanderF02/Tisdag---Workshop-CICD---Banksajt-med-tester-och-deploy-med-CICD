@@ -43,6 +43,7 @@ jobs:
 
       - name: Add EC2 host to known hosts
         run: |
+          mkdir -p ~/.ssh  # Make sure the ~/.ssh directory exists
           ssh-keyscan -H ec2-51-20-85-218.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Debug SSH connection
@@ -61,4 +62,5 @@ jobs:
             npm run build
             pm2 restart all # or any other command to restart your application
           EOF
+
 
