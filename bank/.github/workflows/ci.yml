@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          cd bank/frontend
+          npm install --legacy-peer-deps
+
+      - name: Run tests
+        run: |
+          cd bank/frontend
+          npm test
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AWS_KEY }}
+
+      - name: Deploy to AWS
+        run: |
+          scp -r bank/frontend/* user@your-instance-ip:/path/to/deploy
+          ssh user@your-instance-ip << 'EOF'
+            cd /path/to/deploy
+            npm install
+            npm run build
+            pm2 restart all # or any other command to restart your application
+          EOF
