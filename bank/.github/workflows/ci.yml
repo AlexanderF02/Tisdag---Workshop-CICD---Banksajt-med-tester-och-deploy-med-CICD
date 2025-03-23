@@ -34,14 +34,18 @@ jobs:
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.AWS_KEY }}
+          ssh-private-key: ${{ secrets.AWS_KEY }}  
 
       - name: Deploy to AWS
         run: |
-          scp -i /home/alexander/alexkey.pem -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
-          ssh -i /home/alexander/alexkey.pem ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
+          # Använder SCP för att kopiera filerna till EC2
+          scp -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
+
+          # Ansluter via SSH och kör kommandon på EC2
+          ssh ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
             cd /home/ubuntu/bank
             npm install
             npm run build
-            pm2 restart all # or any other command to restart your application
+            pm2 restart all # eller något annat kommando för att starta om din applikation
           EOF
+
