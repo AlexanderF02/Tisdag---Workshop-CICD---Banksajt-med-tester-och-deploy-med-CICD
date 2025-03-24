@@ -57,8 +57,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          source: "."
-          target: "/home/ubuntu/Tisdag---Workshop-CICD---Banksajt-med-tester-och-deploy-med-CICD"
+          source: "bank/frontend/*"
+          target: "/home/ubuntu/bank/frontend"
 
       - name: Run build and deploy commands on EC2
         uses: appleboy/ssh-action@master
@@ -68,9 +68,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/Tisdag---Workshop-CICD---Banksajt-med-tester-och-deploy-med-CICD
+            cd /home/ubuntu/bank/frontend
             npm install
             npm run build
             pm2 restart all  # Or any other command to restart your application
-
 
