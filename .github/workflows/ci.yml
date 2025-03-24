@@ -72,5 +72,6 @@ jobs:
             npm install
             npm run build
             sudo npm install -g pm2  # Install pm2 globally
-            pm2 restart all  # Or any other command to restart your application
+            pm2 start npm --name "frontend" -- run start  # Start the application with pm2
+            pm2 restart frontend  # Restart the application if it is already running
 
