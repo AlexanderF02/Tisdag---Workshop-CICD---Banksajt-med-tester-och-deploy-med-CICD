@@ -24,43 +24,35 @@ jobs:
       - name: Install dependencies
         run: |
           cd bank/frontend
-          npm install --legacy-peer-deps
+          npm install --legacy-peer-deps 
 
       - name: Run tests
         run: |
           cd bank/frontend
           npm test
 
-      - name: Add SSH key
-        id: add_ssh_key
-        uses: webfactory/ssh-agent@v0.5.3
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
         with:
-          ssh-private-key: ${{ secrets.AWS_KEY }}
+          host: ec2-51-20-85-218.eu-north-1.compute.amazonaws.com  # EC2 Public DNS
+          username: ubuntu  # Standard användare för Ubuntu EC2-instanser
+          key: ${{ secrets.AWS_KEY }}  # Din privata SSH-nyckel från GitHub Secrets
+          port: 22
+          source: "bank/frontend/*"  # Filvägen för filerna att kopiera
+          target: "/home/ubuntu/bank"  # Målväg på EC2
 
-      - name: Check SSH key is added
-        run: |
-          ssh-add -l  # This lists the keys added to the SSH agent to verify the key is correctly loaded
-
-      - name: Add EC2 host to known hosts
-        run: |
-          mkdir -p ~/.ssh  # Make sure the ~/.ssh directory exists
-          ssh-keyscan -H ec2-51-20-85-218.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-
-      - name: Debug SSH connection
-        run: |
-          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com echo "SSH connection successful"
-
-      - name: Deploy to AWS
-        run: |
-          # Use SCP to copy files to EC2, disabling host key checking
-          scp -o StrictHostKeyChecking=no -r bank/frontend/* ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com:/home/ubuntu/bank
-
-          # Connect via SSH and run commands on EC2, disabling host key checking
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-51-20-85-218.eu-north-1.compute.amazonaws.com << 'EOF'
+      - name: Run build and deploy commands on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ec2-51-20-85-218.eu-north-1.compute.amazonaws.com  # EC2 Public DNS
+          username: ubuntu  # Standard användare för Ubuntu EC2-instanser
+          key: ${{ secrets.AWS_KEY }}  # Din privata SSH-nyckel från GitHub Secrets
+          port: 22
+          script: |
             cd /home/ubuntu/bank
             npm install
             npm run build
-            pm2 restart all # or any other command to restart your application
-          EOF
+            pm2 restart all  # Eller vad som är nödvändigt för att starta din app
+
 
 
